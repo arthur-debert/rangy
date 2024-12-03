@@ -15,21 +15,6 @@
         pytest = "^8.3.3"
 
 
-[project]
-name = "Rangy"
-version = "0.0.1"
-authors = [
-  { name="Arthur Debert", email="arthur@debert.xyz" },
-]
-description = "Rangy makes working with ranges a breeze."
-readme = "README.rst"
-requires-python = ">=3.8"
-classifiers = [
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
-]
-
-[project.urls]
+project.urls]
 Homepage = "https://github.com/arthur-debert/rangy"
 Issues = "https://github.com/arthur-debert/rangy/issues"
