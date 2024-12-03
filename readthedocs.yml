@@ -6,3 +6,6 @@ sphinx:
 python:
   install:
     - requirements: requirements-doc.txt
+
+build:
+  os: ubuntu-20.04
