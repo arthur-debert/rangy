@@ -123,5 +123,5 @@ celerybeat-schedule
 # dotenv
 .env
 .env.*
-.venv
+.venv*
 docs/_build
