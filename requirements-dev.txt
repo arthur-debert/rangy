@@ -26,3 +26,4 @@ stack-data==0.6.3
 traitlets==5.14.3
 wcwidth==0.2.13
 pytest-xdist==3.6.1
+twine==6.0.1
