@@ -30,12 +30,12 @@ setup(
     extras_require={
         "testing": ["pytest"],
     },
-    author="Your Name",
-    author_email="your.email@example.com",
+    author="Arthur Debert",
+    author_email="arthur@debert.xyz",
     description="A library for distributing items based on flexible count specifications.",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/yourusername/rangy",
+    url="https://github.com/arthur-debert/rangy",
     python_requires=">=3.6",
     classifiers=[
         "Programming Language :: Python :: 3",
