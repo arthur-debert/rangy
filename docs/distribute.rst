@@ -1,7 +1,7 @@
 .. module:: rangy
 
 Distribute
-=========
+==========
 
 The ``distribute`` function provides a flexible mechanism for distributing a list of items into sublists according to a set of :class:`Rangy` count specifications. This is particularly useful when dealing with data segmentation tasks where the number of elements in each segment can vary within defined constraints.
 
@@ -56,11 +56,11 @@ If multiple unbounded counts are specified, ``distribute`` distributes the remai
 
 .. code-block:: python
 
-   items = [1, 2, 3, 4, 5, 6, 7, 8]
-   counts = [Rangy(1), Rangy("*"), Rangy("*")] # One item, then split the rest
+    items = [1, 2, 3, 4, 5, 6, 7, 8]
+    counts = [Rangy(1), Rangy("*"), Rangy("*")] # One item, then split the rest
 
-   result = distribute(items, counts)
-   print(result)  # Output: [[1], [2, 3, 4], [5, 6, 7, 8]] (approximately even split)
+    result = distribute(items, counts)
+    print(result)  # Output: [[1], [2, 3, 4], [5, 6, 7, 8]] (approximately even split)
 
 
 Edge Cases and Behavior
@@ -73,6 +73,7 @@ Edge Cases and Behavior
 * **Separator Handling with Non-String Separators:** If your separator is not a string type, you will need to provide a ``separator_type`` for it to be correctly excluded from the output sublists.
 
 .. code-block:: python
+
     items_with_int_separator = [1, 2, 3, 4, 5]
     counts = [Rangy(2), Rangy(1)]  # Expect: [[1, 2], [4]]
     separator = 3
