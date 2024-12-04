@@ -5,6 +5,18 @@ from .registry import ConverterRegistry
 from .const import SPECIAL_CHARS, INFINITY
 
 def _split(as_squence):
+    """
+    Splits a sequence into a tuple of two values.
+    It will ensure only sequences of length 1 or 2 are accepted and
+    that no None values are present.
+
+    Args:
+        as_squence: The sequence to split, str, list, tuple.
+    Raises:
+        ParseRangeError: If the input is invalid.
+    Returns:
+        A tuple of two values.
+    """
     if None in as_squence:
         raise ParseRangeError("Invalid range tuple/list")
     if len(as_squence) == 1:
