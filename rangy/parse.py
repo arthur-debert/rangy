@@ -28,13 +28,10 @@ def _nomalize_str(range_str):
     Returns:
         A tuples of parts of the range string.
     """
-    range_str = range_str.strip()
-    if range_str.startswith("(") and range_str.endswith(")"):
-        range_str = range_str[1:-1]
-    elif range_str.startswith("[") and range_str.endswith("]"):
-        range_str = range_str[1:-1]
-
-    return tuple(re.split(r'[\s,;|-]+', range_str))
+     # FIX: Remove brackets FIRST, then split.
+    range_str = re.sub(r'^[\[\(]|[\]\)]$', '', range_str.strip())  # Remove brackets
+    range_str = re.split(r'[\s,;|-]+', range_str) # split
+    return tuple(part.strip() for part in range_str if part.strip()) # Remove empty strings
 
 def _normalize_to_sequence(range_input):
     """Normalizes various range inputs into a consistent tuple representation.
