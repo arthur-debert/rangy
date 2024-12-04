@@ -1,3 +1,4 @@
+import re
 from rangy.exceptions import ParseRangeError
 from rangy.registry import TypeRegistry
 
@@ -32,7 +33,7 @@ def _normalize_range_input(range_input):
         elif range_str.startswith("[") and range_str.endswith("]"):
             range_str = range_str[1:-1]
 
-        parts = range_str.split(",")  # Handle hyphens later if needed.
+        parts = re.split(r'[\s,;|-]+', range_str)  # Use regex to split by any whitespace, comma, semicolon, or hyphen.
 
         if len(parts) == 1:
             return parts[0], parts[0]
