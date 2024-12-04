@@ -6,8 +6,33 @@
 #  * build dir is dist
 
 get_version() {
-  version=$(python setup.py --version)
-  echo "Current version is $version. Do you want to publish this version? (y/n)"
+  # get the package name
+  package_name=$(python setup.py --name 2>/dev/null)
+  if [[ -z "$package_name" ]]; then
+    echo "Could not determine package name from setuptools_scm."
+    exit 1
+  fi
+  echo "Package name: $package_name"
+
+  # get version from setuptools_scm, __version__ and check if they match
+  version=$(python setup.py --version 2>/dev/null)
+  if [[ -z "$version" ]] || [[ "$version" == "0.0.0" ]]; then
+    echo "Could not determine version from setuptools_scm."
+    exit 1
+  fi
+  # get the version from the package itself in $package_name/__version__.py
+    version_from_file=$(python -c "from $package_name.__version__ import __version__; print(__version__)")
+    echo "Version from file: $version_from_file"
+  if [[ "$version" != "$version_from_file" ]]; then
+
+    echo "Version from setuptools_scm and __version__ do not match."
+    exit 1
+  fi
+  # we've got the version, now let's confirm with the user.
+  echo "Current version is $version."
+  echo ""
+
+  echo "Do you want to publish this version? (y/n)"
   read -r response
   if [[ "$response" != "y" ]]; then
     echo "Exiting without publishing."
@@ -37,12 +62,14 @@ build_and_publish() {
   twine upload dist/*
 }
 
-# if the script passes the argument:
-# getversion -> run only get_version function
-# published -> run only check_if_published function
-# gittag -> run only create_and_push_git_tag function
-# publish -> run build_and_publish function
-if [ "$1" = "getversion" ]; then
+# no arguments, do everything.
+# if you want to do only one step, pass the argument , helpful for debugging.
+if [ "$1" = "" ]; then
+  get_version
+  check_if_published
+  create_and_push_git_tag
+  build_and_publish
+elif [ "$1" = "getversion" ]; then
   get_version
 elif [ "$1" = "published" ]; then
   check_if_published
@@ -51,8 +78,7 @@ elif [ "$1" = "gittag" ]; then
 elif [ "$1" = "publish" ]; then
   build_and_publish
 else
-  get_version
-  check_if_published
-  create_and_push_git_tag
-  build_and_publish
+  echo "Usage: $0 [getversion|published|gittag|publish]"
+  exit 1
 fi
+
