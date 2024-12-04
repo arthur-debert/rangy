@@ -1,6 +1,5 @@
 import re
 from typing import Tuple, Union
-import copy
 
 from rangy import (ANY, ANY_CHAR, AT_LEAST_ONE, EXACT, INFINITY, ONE_PLUS_CHAR,
                    RANGE)
@@ -143,7 +142,7 @@ class Rangy:
         _max (int): The maximum range value.
         _rangy_type (int): The type of range.
     """
-    def __init__(self, range: Union[int, str, Tuple[int, int]]):
+    def __init__(self, range: Union[int, str, Tuple[int, int]], parse_func: callable = _parse):
         """
         Initializes a Rangy instance.
 
@@ -158,7 +157,7 @@ class Rangy:
             self._max = range._max
             self._type = range._type
         else:
-            self._min, self._max = _parse(self, range)
+            self._min, self._max = parse_func(self, range)
             self._type = self._determine_type()
 
     def _determine_type(self) -> int:
@@ -176,27 +175,6 @@ class Rangy:
             return EXACT
         else:
             return RANGE
-
-    def __copy__(self):
-        """
-        Creates a shallow copy of the Rangy instance.
-
-        Returns:
-            Rangy: A new Rangy instance with the same attributes.
-        """
-        return Rangy((self._min, self._max))
-
-    def __deepcopy__(self, memo):
-        """
-        Creates a deep copy of the Rangy instance.
-
-        Args:
-            memo (dict): A dictionary of objects already copied during the current copying pass.
-
-        Returns:
-            Rangy: A new Rangy instance with the same attributes.
-        """
-        return self.__copy__()
 
     def __lt__(self, other: int) -> bool:
         """
