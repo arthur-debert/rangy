@@ -1,5 +1,6 @@
 import re
 from typing import Tuple, Union
+import copy
 
 from rangy import (ANY, ANY_CHAR, AT_LEAST_ONE, EXACT, INFINITY, ONE_PLUS_CHAR,
                    RANGE)
@@ -175,6 +176,27 @@ class Rangy:
             return EXACT
         else:
             return RANGE
+
+    def __copy__(self):
+        """
+        Creates a shallow copy of the Rangy instance.
+
+        Returns:
+            Rangy: A new Rangy instance with the same attributes.
+        """
+        return Rangy((self._min, self._max))
+
+    def __deepcopy__(self, memo):
+        """
+        Creates a deep copy of the Rangy instance.
+
+        Args:
+            memo (dict): A dictionary of objects already copied during the current copying pass.
+
+        Returns:
+            Rangy: A new Rangy instance with the same attributes.
+        """
+        return self.__copy__()
 
     def __lt__(self, other: int) -> bool:
         """
