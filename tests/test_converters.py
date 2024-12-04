@@ -1,6 +1,6 @@
 import pytest
 
-from rangy.converters import Converter
+from rangy import Converter
 
 
 def test_converter_to_number_with_numeric_function():

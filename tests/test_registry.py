@@ -1,8 +1,7 @@
 
 import pytest
 
-from rangy.converters import Converter
-from rangy.registry import TypeRegistry
+from rangy import Converter, TypeRegistry
 
 
 def test_register_and_get_converter():
