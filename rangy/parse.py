@@ -1,8 +1,8 @@
 import re
 
 from rangy.exceptions import ParseRangeError
-from rangy import ConverterRegistry
-
+from rangy import ConverterRegistry, Rangy
+from .const import SPECIAL_CHARS
 
 def _split(as_squence):
     if len(as_squence) == 1:
@@ -49,6 +49,8 @@ def _normalize_to_sequence(range_input):
 
 
 def _convert_string_part(part):
+    if part in SPECIAL_CHARS:
+        return part
     for converter in ConverterRegistry():
         try:
             return converter(part)

@@ -4,6 +4,8 @@ from rangy.exceptions import ParseRangeError
 
 def test_single_integer():
     assert parse_range(5) == (5, 5)
+def test_open():
+    assert parse_range((5, "*")) == (5,"*")
 
 def test_tuple_of_integers():
     assert parse_range((3, 7)) == (3, 7)
