@@ -1,5 +1,6 @@
 from rangy.converters import Converter
 
+
 class ConverterRegistry:
     """
     A registry for managing `Converter` instances that handle the conversion of custom data types to numeric and string representations.

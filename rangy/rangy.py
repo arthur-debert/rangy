@@ -1,8 +1,8 @@
-from dataclasses import dataclass, field
-from typing import Tuple, Union
 import re
+from typing import Tuple, Union
 
-from rangy import AT_LEAST_ONE, EXACT,ANY, RANGE, INFINITY, ANY_CHAR, ONE_PLUS_CHAR
+from rangy import (ANY, ANY_CHAR, AT_LEAST_ONE, EXACT, INFINITY, ONE_PLUS_CHAR,
+                   RANGE)
 
 RangyType = Union[int, str]
 

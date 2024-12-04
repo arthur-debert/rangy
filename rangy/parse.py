@@ -1,6 +1,7 @@
 import re
+
 from rangy.exceptions import ParseRangeError
-from rangy.registry import ConverterRegistry
+from rangy import ConverterRegistry
 
 
 def _split(as_squence):
