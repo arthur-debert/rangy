@@ -2,7 +2,7 @@ import re
 from typing import Tuple, Union
 
 from rangy import (ANY, ANY_CHAR, AT_LEAST_ONE, EXACT, INFINITY, ONE_PLUS_CHAR,
-                   RANGE)
+                   RANGE, SPECIAL_CHARS)
 from rangy.exceptions import ParseRangeError
 
 RangyType = Union[int, str]
@@ -57,8 +57,8 @@ def _parse(self, rangy) -> Tuple[Union[int, float], Union[int, float]]:
     else:
         raise ParseRangeError(f"Invalid rangy specification: {rangy}")
 
-    min_val = int(min_val) if min_val not in ("*", "+") else min_val
-    max_val = int(max_val) if max_val not in ("*", "+") else max_val
+    min_val = int(min_val) if min_val not in (SPECIAL_CHARS) else min_val
+    max_val = int(max_val) if max_val not in (SPECIAL_CHARS) else max_val
 
     if min_val == '*':
         min_val = 0
