@@ -77,3 +77,6 @@ local_scheme = "dirty-tag"
 addopts = "-ra -q"
 testpaths = ["tests"]
 
+[tool.twine]
+repository = "https://upload.pypi.org/legacy/"
+

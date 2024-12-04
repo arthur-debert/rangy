@@ -49,29 +49,9 @@ create_and_push_git_tag() {
   git push origin "v$version" && print_success "Tag v$version pushed to origin."
 }
 
-open_url_in_browser() {
-  url=$1
-  if which xdg-open > /dev/null; then
-    xdg-open "$url"
-  elif which open > /dev/null; then
-    open "$url"
-  else
-    print_error "Could not detect the web browser to open the URL."
-  fi
-}
 
 build_and_publish() {
-  rm -rf dist
-  python -m build && print_success "Package built successfully." || exit 1
-  output=$(twine upload dist/* 2>&1)
-  if [ $? -ne 0 ]; then
-    print_error "Failed to upload package to PyPi."
-    echo "$output"
-    exit 1
-  fi
-  print_success "Package published successfully."
-  url=$(echo "$output" | grep -o 'https://pypi.org/project/[^ ]*' | sed 's/[^ ]*$/&/')
-  echo "Package URL: $url"
+  rm -fr dist;  python -m build &&  print_success "Package built" && twine upload dist/* && print_success "Package published"
 }
 
 confirm(){
@@ -83,6 +63,7 @@ confirm(){
     echo "Aborted."
     exit 1
   fi
+  echo
 }
 # no arguments, do everything.
 # if you want to do only one step, pass the argument , helpful for debugging.
@@ -90,11 +71,9 @@ if [ "$1" = "" ]; then
   package_name=$(get_package_name)
   get_version "$package_name"
   confirm
-  echo
   check_if_published
   create_and_push_git_tag
   build_and_publish
-  open_url_in_browser "$url"
 elif [ "$1" = "getversion" ]; then
   get_version
 elif [ "$1" = "published" ]; then
