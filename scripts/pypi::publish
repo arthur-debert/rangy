@@ -1,0 +1,44 @@
+#! /usr/bin/env bash
+
+# This script is used to publish a package to PyPi. Assumptions:
+#   * Your cwd is the root of the package you want to publish.
+#  * You're using setuptools_scm to manage your version number, under git tags.
+#  * build dir is dist
+
+get_version() {
+  version=$(python setup.py --version)
+  echo "Current version is $version. Do you want to publish this version? (y/n)"
+  read -r response
+  if [[ "$response" != "y" ]]; then
+    echo "Exiting without publishing."
+    exit 1
+  fi
+}
+
+check_if_published() {
+  if twine check dist/* | grep -q "$version"; then
+    echo "Version $version is already published."
+    exit 1
+  fi
+}
+
+create_and_push_git_tag() {
+  if git rev-parse "v$version" >/dev/null 2>&1; then
+    echo "Tag v$version already exists."
+  else
+    git tag "v$version"
+  fi
+  git push origin "v$version"
+}
+
+build_and_publish() {
+  rm -rf dist
+  python setup.py sdist bdist_wheel
+  twine upload dist/*
+}
+
+# Main script execution
+get_version
+check_if_published
+create_and_push_gikt_tag
+build_and_publish
