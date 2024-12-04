@@ -1,5 +1,5 @@
 import pytest
-from rangy import _normalize_range_input
+from rangy import _normalize_to_sequence
 from rangy.exceptions import ParseRangeError
 
 @pytest.mark.parametrize("range_input, expected_output", [
