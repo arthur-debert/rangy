@@ -1,4 +1,4 @@
-from rangy import Converter, TypeRegistry
+from rangy import Converter, ConverterRegistry
 
 # Create converters for built-in types
 
@@ -8,8 +8,8 @@ def register_builtins():
     converters = [int_converter, float_converter]
     for converter in converters:
         try:
-            TypeRegistry.get(converter.type)
+            ConverterRegistry.get(converter._type)
         except KeyError:
-            TypeRegistry.register(converter)
+            ConverterRegistry.register(converter)
 
 register_builtins()

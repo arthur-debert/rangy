@@ -1,12 +1,12 @@
 from rangy.converters import Converter
 
-class TypeRegistry:
+class ConverterRegistry:
 
     types = {}
 
     @classmethod
     def register(cls, converter: Converter):
-        cls.types[converter.type] = converter
+        cls.types[converter._type] = converter
 
     @classmethod
     def get(cls, _type):

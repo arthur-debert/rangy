@@ -1,6 +1,6 @@
 import re
 from rangy.exceptions import ParseRangeError
-from rangy.registry import TypeRegistry
+from rangy.registry import ConverterRegistry
 
 
 def _normalize_range_input(range_input):
@@ -46,7 +46,7 @@ def _normalize_range_input(range_input):
 
 
 def _convert_string_part(part): # Helper function.
-    for converter in TypeRegistry():
+    for converter in ConverterRegistry():
         try:
             return converter(part)  # Use converter.parse() for strings.
         except (ValueError, TypeError):
@@ -71,13 +71,13 @@ def parse_range(range_input):
 
     try:
         if not isinstance(start, str):
-            converter = TypeRegistry.get(start)
+            converter = ConverterRegistry.get(start)
             parsed_start = converter(start) # or converter.to_number(start) depending on your Converter interface.
         else:
             parsed_start = _convert_string_part(start)
 
         if not isinstance(end, str):
-            converter = TypeRegistry.get(end)
+            converter = ConverterRegistry.get(end)
             parsed_end = converter(end) # or converter.to_number(end)
         else:
             parsed_end = _convert_string_part(end)

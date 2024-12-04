@@ -1,6 +1,6 @@
 class Converter():
     """
-    Rangy can work with any type that implements a numerical conversion (i.e. __int__ or __float) and a string convertion ( __str__  or __repr__), method.
+    Rangy can use ranges composed of many different types. As long as it mplements a numerical conversion (i.e. __int__ or __float) and a string convertion ( __str__  or __repr__), method.
 
     Additionally, if the object does not implement those, the equivalent functions can be passed as arguments to the constructor.
 
@@ -9,8 +9,8 @@ class Converter():
         to_numeric (function): Function that converts the object to a numerical value.
         to_string (function): Function that converts the object to a string value.
     """
-    def __init__(self, type, to_numeric=None, to_string=None):
-        self.type = type
+    def __init__(self, _type, to_numeric=None, to_string=None):
+        self._type = _type
         self.to_numeric = to_numeric
         self.to_string = to_string
 
