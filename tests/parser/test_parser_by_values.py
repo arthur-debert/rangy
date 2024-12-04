@@ -37,3 +37,11 @@ def test_mixed_tuple():
 def test_single_string():
     assert parse_range("5") == (5, 5)
 
+
+def test_range_input():
+    another_range = (10, 20)
+    assert parse_range(another_range) == (10, 20)
+
+def test_range_input_open():
+    another_range = (10, "*")
+    assert parse_range(another_range) == (10, "*")

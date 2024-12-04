@@ -27,7 +27,8 @@ def _normalize_to_sequence(range_input):
     Raises:
         ParseRangeError: If the input is invalid or cannot be normalized.
     """
-
+    if isinstance(range_input, Rangy):
+        range_input = range_input.copy().values
 
     if isinstance(range_input, (tuple, list)):
         return _split(range_input)
