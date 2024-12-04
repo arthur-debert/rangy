@@ -37,8 +37,22 @@ build_and_publish() {
   twine upload dist/*
 }
 
-# Main script execution
-get_version
-check_if_published
-create_and_push_gikt_tag
-build_and_publish
+# if the script passes the argument:
+# getversion -> run only get_version function
+# published -> run only check_if_published function
+# gittag -> run only create_and_push_git_tag function
+# publish -> run build_and_publish function
+if [ "$1" = "getversion" ]; then
+  get_version
+elif [ "$1" = "published" ]; then
+  check_if_published
+elif [ "$1" = "gittag" ]; then
+  create_and_push_git_tag
+elif [ "$1" = "publish" ]; then
+  build_and_publish
+else
+  get_version
+  check_if_published
+  create_and_push_git_tag
+  build_and_publish
+fi
