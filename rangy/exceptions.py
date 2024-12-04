@@ -1,4 +1,4 @@
 
-class ParseRangeError(Exception):
+class ParseRangeError(ValueError):
     """Raised when a range string cannot be parsed."""
     pass
