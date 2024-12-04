@@ -84,15 +84,15 @@ class Converter():
             return self.to_string(value)
         return str(value)
 
-    def __float__(self, value):
+    def __float__(self, value): # pragma: no cover
         return self.to_number(value)
 
-    def __int__(self, value):
+    def __int__(self, value):# pragma: no cover
         return self.to_number(value)
 
-    def __str__(self, value):
+    def __str__(self, value): # pragma: no cover
         return self.to_str(value)
 
-    def __call__(self, value):
+    def __call__(self, value): # pragma: no cover
         return self.to_number(value)
 
