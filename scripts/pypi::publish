@@ -1,9 +1,23 @@
 #! /usr/bin/env bash
 
+# Usage:
+#   pypi::publish
+# If debugging, you can run the steps individually:
+#   pypi::publish getversion
+#   pypi::publish published
+#   pypi::publish gittag
+#   pypi::publish publish
+
 # This script is used to publish a package to PyPi. Assumptions:
-#   * Your cwd is the root of the package you want to publish.
+#  * Your cwd is the root of the package you want to publish.
 #  * You're using setuptools_scm to manage your version number, under git tags.
 #  * build dir is dist
+#
+#
+#  This setup aims to reduce the tasteless repetition of things such the verison number (from __version__, setup.cf, setup.py, pyproject.toml, git). But it does't do away with allo of you. You will need:
+#   * __version__.py:  should be in your scm and tagged at any rate.
+#   * either setup.py or setup.cfg:
+#  The script requires both versions to match, and will prompt you to confirm the version before publishing.
 
 print_error() {
   echo -e "\033[31m$1\033[0m"
@@ -15,25 +29,24 @@ print_success() {
 
 get_version() {
   # get the package name
-  package_name=$(python setup.py --name 2>/dev/null)
+  package_name=$(grep -E '^name\s*=' setup.cfg | cut -d "=" -f2 | xargs)
   if [[ -z "$package_name" ]]; then
-    print_error "Could not determine package name from setuptools_scm."
+    print_error "Could not determine package name from setup.cfg."
     exit 1
   fi
   echo "Package name: $package_name"
 
-  # get version from setuptools_scm, __version__ and check if they match
-  version=$(python setup.py --version 2>/dev/null)
-  if [[ -z "$version" ]] || [[ "$version" == "0.0.0" ]]; then
-    print_error "Could not determine version from setuptools_scm."
+  # get version from setup.cfg
+  version=$(grep -E '^version\s*=' setup.cfg | cut -d "=" -f2 | xargs)
+  if [[ -z "$version" ]]; then
+    print_error "Could not determine version from setup.cfg."
     exit 1
   fi
   # get the version from the package itself in $package_name/__version__.py
-    version_from_file=$(python -c "from $package_name.__version__ import __version__; print(__version__)")
-    echo "Version from file: $version_from_file"
+  version_from_file=$(python -c "from $package_name.__version__ import __version__; print(__version__)")
+  echo "Version from file: $version_from_file"
   if [[ "$version" != "$version_from_file" ]]; then
-
-    print_error "Version from setuptools_scm and __version__ do not match."
+    print_error "Version from setup.cfg($version) and __version__ ($version_from_file) do not match."
     exit 1
   fi
   # we've got the version, now let's confirm with the user.
