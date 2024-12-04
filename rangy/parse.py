@@ -29,13 +29,7 @@ def _normalize_to_sequence(range_input):
 
 
     if isinstance(range_input, (tuple, list)):
-        if len(range_input) == 1:
-            return range_input[0], range_input[0]  # Single element tuple/list.
-        elif len(range_input) == 2:
-            return range_input[0], range_input[1]
-        else:
-            raise ParseRangeError("Invalid range tuple/list length")
-
+        return _split(range_input)
     elif isinstance(range_input, int):
         return range_input, range_input  #
 
@@ -53,10 +47,10 @@ def _normalize_to_sequence(range_input):
         raise ParseRangeError(f"Unsupported range input type: {type(range_input)}")
 
 
-def _convert_string_part(part): # Helper function.
+def _convert_string_part(part):
     for converter in ConverterRegistry():
         try:
-            return converter(part)  # Use converter.parse() for strings.
+            return converter(part)
         except (ValueError, TypeError):
             pass  # Try the next converter
     raise ParseRangeError("No suitable converter found for string part.")
