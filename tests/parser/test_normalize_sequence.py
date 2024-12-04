@@ -16,7 +16,7 @@ from rangy.exceptions import ParseRangeError
     ("1-2", ("1", "2")), # Hyphenated range.
 ])
 def test_normalize_range_input_valid(range_input, expected_output):
-    assert _normalize_range_input(range_input) == expected_output
+    assert _normalize_to_sequence(range_input) == expected_output
 
 
 @pytest.mark.parametrize("range_input", [
@@ -29,7 +29,7 @@ def test_normalize_range_input_valid(range_input, expected_output):
 ])
 def test_normalize_range_input_invalid(range_input):
     with pytest.raises(ParseRangeError):
-        _normalize_range_input(range_input)
+        _normalize_to_sequence(range_input)
 
 
 

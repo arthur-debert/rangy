@@ -3,7 +3,18 @@ from rangy.exceptions import ParseRangeError
 from rangy.registry import ConverterRegistry
 
 
-def _normalize_range_input(range_input):
+def _split(as_squence):
+    if len(as_squence) == 1:
+        # this is valid, as it
+        # indicates a single value range
+        return as_squence[0], as_squence[0]
+    elif len(as_squence) == 2:
+        return as_squence[0], as_squence[1]
+    else:
+        raise ParseRangeError("Invalid range tuple/list length")
+
+
+def _normalize_to_sequence(range_input):
     """Normalizes various range inputs into a consistent tuple representation.
 
     Args:
@@ -15,6 +26,8 @@ def _normalize_range_input(range_input):
     Raises:
         ParseRangeError: If the input is invalid or cannot be normalized.
     """
+
+
     if isinstance(range_input, (tuple, list)):
         if len(range_input) == 1:
             return range_input[0], range_input[0]  # Single element tuple/list.
@@ -24,9 +37,10 @@ def _normalize_range_input(range_input):
             raise ParseRangeError("Invalid range tuple/list length")
 
     elif isinstance(range_input, int):
-        return range_input, range_input  # Single integer.
+        return range_input, range_input  #
 
     elif isinstance(range_input, str):
+        # treat the string.
         range_str = range_input.strip()
         if range_str.startswith("(") and range_str.endswith(")"):
             range_str = range_str[1:-1]
@@ -34,13 +48,7 @@ def _normalize_range_input(range_input):
             range_str = range_str[1:-1]
 
         parts = re.split(r'[\s,;|-]+', range_str)  # Use regex to split by any whitespace, comma, semicolon, or hyphen.
-
-        if len(parts) == 1:
-            return parts[0], parts[0]
-        elif len(parts) == 2:
-            return parts[0], parts[1]
-        else:
-            raise ParseRangeError("Invalid range string format")
+        return _split(parts)
     else:
         raise ParseRangeError(f"Unsupported range input type: {type(range_input)}")
 
@@ -67,7 +75,7 @@ def parse_range(range_input):
         ParseRangeError: If the input is invalid or cannot be parsed.
     """
 
-    start, end = _normalize_range_input(range_input)
+    start, end = _normalize_to_sequence(range_input)
 
     try:
         if not isinstance(start, str):
