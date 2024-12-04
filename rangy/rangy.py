@@ -47,7 +47,14 @@ def _parse(self, rangy) -> Tuple[Union[int, float], Union[int, float]]:
     elif isinstance(rangy, str) and any(sep in rangy for sep in "-,:;"):
         raise ParseRangeError(f"Invalid rangy specification: {rangy}")
     elif isinstance(rangy, (int, str)):
-        min_val = max_val = rangy
+        if rangy in SPECIAL_CHARS:
+            min_val = rangy
+            max_val = rangy
+        else:
+            try:
+                min_val = max_val = int(rangy)
+            except ValueError:
+                raise ParseRangeError(f"Invalid rangy specification: {rangy}")
     elif rangy == ANY_CHAR:
         min_val = 0
         max_val = INFINITY

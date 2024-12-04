@@ -117,8 +117,8 @@ def distribute(items: List[Any], rangys: List[Rangy], separator: str = SEPERATOR
         item_index = 0
 
         for i, take in enumerate(takes):
-            result[i].extend(items[item_index:item_index + take])
-            item_index += take
+            result[i].extend(items[item_index:int(item_index + take)])
+            item_index += int(take)
         # Validate AND check if we've ignored some arguments.
         if item_index != len(items):
             raise ValueError(f"Too many arguments provided. {len(items) - item_index} extra argument(s) found.")

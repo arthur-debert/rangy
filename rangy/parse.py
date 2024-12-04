@@ -81,7 +81,7 @@ def _convert_string_part(part):
             return converter(part)
         except (ValueError, TypeError):
             pass  # Try the next converter
-    raise ParseRangeError("No suitable converter found for string part.")
+    raise ParseRangeError(f"No suitable converter found for string part: {part}")
 
 
 def parse_range(range_input):
