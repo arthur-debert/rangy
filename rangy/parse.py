@@ -46,9 +46,9 @@ def _normalize_range_input(range_input):
 
 
 def _convert_string_part(part): # Helper function.
-    for converter in TypeRegistry.values():
+    for converter in TypeRegistry():
         try:
-            return converter.parse(part)  # Use converter.parse() for strings.
+            return converter(part)  # Use converter.parse() for strings.
         except (ValueError, TypeError):
             pass  # Try the next converter
     raise ParseRangeError("No suitable converter found for string part.")
