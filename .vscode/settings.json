@@ -5,6 +5,10 @@
 
     "search.exclude": {
         "__pycache___": true,
+        ".venv": true,
+        "dist": true,
+        "build": true
+    },
         ".venv": true
     },
     "findUnusedExports.detectCircularImports": true,
