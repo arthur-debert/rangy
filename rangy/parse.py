@@ -14,6 +14,27 @@ def _split(as_squence):
     else:
         raise ParseRangeError("Invalid range tuple/list length")
 
+def _nomalize_str(range_str):
+    """
+    Normalizes a range string by removing brackets and splitting it into parts.
+
+    "1-5" -> ["1", "5"]
+    "(1-5)" -> ["1", "5"]
+    "1-5" -> ["1", "5"]
+    "(1,3)"
+
+    Args:
+        range_str: The range string to normalize.
+    Returns:
+        A tuples of parts of the range string.
+    """
+    range_str = range_str.strip()
+    if range_str.startswith("(") and range_str.endswith(")"):
+        range_str = range_str[1:-1]
+    elif range_str.startswith("[") and range_str.endswith("]"):
+        range_str = range_str[1:-1]
+
+    return tuple(re.split(r'[\s,;|-]+', range_str))
 
 def _normalize_to_sequence(range_input):
     """Normalizes various range inputs into a consistent tuple representation.
@@ -36,15 +57,7 @@ def _normalize_to_sequence(range_input):
         return range_input, range_input  #
 
     elif isinstance(range_input, str):
-        # treat the string.
-        range_str = range_input.strip()
-        if range_str.startswith("(") and range_str.endswith(")"):
-            range_str = range_str[1:-1]
-        elif range_str.startswith("[") and range_str.endswith("]"):
-            range_str = range_str[1:-1]
-
-        parts = re.split(r'[\s,;|-]+', range_str)  # Use regex to split by any whitespace, comma, semicolon, or hyphen.
-        return _split(parts)
+        return _split(_nomalize_str(range_input))
     else:
         raise ParseRangeError(f"Unsupported range input type: {type(range_input)}")
 
