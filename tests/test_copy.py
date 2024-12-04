@@ -1,6 +1,8 @@
 
 import copy
+
 from rangy import Rangy
+
 
 def test_shallow_copy():
     rangy1 = Rangy(5)

@@ -1,8 +1,10 @@
 import re
 
 from rangy.exceptions import ParseRangeError
+
+from .const import INFINITY, SPECIAL_CHARS
 from .registry import ConverterRegistry
-from .const import SPECIAL_CHARS, INFINITY
+
 
 def _split(as_squence):
     """
