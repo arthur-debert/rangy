@@ -1,6 +1,7 @@
 import pytest
 
-from rangy  import Rangy, EXACT, ANY, AT_LEAST_ONE, RANGE
+from rangy import ANY, AT_LEAST_ONE, EXACT, RANGE, Rangy
+
 
 def test_validate_exact():
     count = Rangy(3)

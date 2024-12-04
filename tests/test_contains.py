@@ -1,5 +1,7 @@
 import pytest
+
 from rangy import Rangy
+
 
 @pytest.mark.parametrize("count, item, expected", [
     (4, 4, True),

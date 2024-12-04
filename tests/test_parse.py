@@ -1,5 +1,7 @@
 import pytest
-from rangy import _parse, INFINITY
+
+from rangy import INFINITY, _parse
+
 
 @pytest.mark.parametrize("count, expected", [
     (4, (4, 4)),

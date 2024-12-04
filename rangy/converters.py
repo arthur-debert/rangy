@@ -41,3 +41,4 @@ class Converter():
 
     def __call__(self, value):
         return self.to_number(value)
+

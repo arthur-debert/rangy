@@ -1,6 +1,6 @@
 import pytest
 
-from rangy import Rangy, ANY, AT_LEAST_ONE, EXACT, RANGE
+from rangy import ANY, AT_LEAST_ONE, EXACT, RANGE, Rangy
 
 
 def test_from_string_exact():
