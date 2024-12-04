@@ -79,15 +79,15 @@ def test_ge(count, other, expected):
     var_count = Rangy(count)
     assert (var_count >= other) == expected
 
-@pytest.mark.parametrize("count", [
-    (-1, 3),
-    (3, -1),
-    (-1, -3),
+@pytest.mark.parametrize("count, expected", [
+    ((-1, 3), (-1, 3)),
+    ((3, -1), (-1, 3)),
+    ((-1, -3), (-3, -1)),
 ], ids=[
     "negative_min",
     "negative_max",
     "negative_both"
 ])
-def test_negative(count):
-    with pytest.raises(ValueError):
-        Rangy(count)
+def test_negative(count, expected):
+    var_count = Rangy(count)
+    assert var_count.values == expected

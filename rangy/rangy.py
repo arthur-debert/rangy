@@ -6,7 +6,7 @@ from rangy import (ANY, ANY_CHAR, AT_LEAST_ONE, EXACT, INFINITY, ONE_PLUS_CHAR,
 
 RangyType = Union[int, str]
 
-
+from .parse import parse_range as new_parse
 
 
 def _parse(self, rangy) -> Tuple[Union[int, float], Union[int, float]]:
@@ -142,7 +142,7 @@ class Rangy:
         _max (int): The maximum range value.
         _rangy_type (int): The type of range.
     """
-    def __init__(self, range: Union[int, str, Tuple[int, int]], parse_func: callable = _parse):
+    def __init__(self, range: Union[int, str, Tuple[int, int]], parse_func: callable = new_parse):
         """
         Initializes a Rangy instance.
 
@@ -157,7 +157,7 @@ class Rangy:
             self._max = range._max
             self._type = range._type
         else:
-            self._min, self._max = parse_func(self, range)
+            self._min, self._max = parse_func(range)
             self._type = self._determine_type()
 
     def _determine_type(self) -> int:
@@ -167,9 +167,9 @@ class Rangy:
         Returns:
             int: The rangy type, one of rangy_EXACT, rangy_RANGE, rangy_ANY, or rangy_AT_LEAST_ONE.
         """
-        if self._min == 0 and self._max == INFINITY:
+        if self._min == 0 and self._max == float(INFINITY):
             return ANY
-        elif self._min == 1 and self._max == INFINITY:
+        elif self._min == 1 and self._max == float(INFINITY):
             return AT_LEAST_ONE
         elif self._min == self._max:
             return EXACT

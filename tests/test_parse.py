@@ -1,6 +1,7 @@
 import pytest
 
 from rangy import INFINITY, _parse
+from rangy.exceptions import ParseRangeError
 
 
 @pytest.mark.parametrize("count, expected", [
@@ -59,5 +60,5 @@ def test_parse(count, expected):
     "invalid_range_semicolon"
 ])
 def test_parse_invalid(count):
-    with pytest.raises(ValueError):
+    with pytest.raises(ParseRangeError):
         _parse(None, count)

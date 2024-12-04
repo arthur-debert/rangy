@@ -1,10 +1,12 @@
 import re
 
 from rangy.exceptions import ParseRangeError
-from rangy import ConverterRegistry, Rangy
-from .const import SPECIAL_CHARS
+from .registry import ConverterRegistry
+from .const import SPECIAL_CHARS, INFINITY
 
 def _split(as_squence):
+    if None in as_squence:
+        raise ParseRangeError("Invalid range tuple/list")
     if len(as_squence) == 1:
         # this is valid, as it
         # indicates a single value range
@@ -28,7 +30,6 @@ def _nomalize_str(range_str):
     Returns:
         A tuples of parts of the range string.
     """
-     # FIX: Remove brackets FIRST, then split.
     range_str = re.sub(r'^[\[\(]|[\]\)]$', '', range_str.strip())  # Remove brackets
     range_str = re.split(r'[\s,;|-]+', range_str) # split
     return tuple(part.strip() for part in range_str if part.strip()) # Remove empty strings
@@ -45,6 +46,7 @@ def _normalize_to_sequence(range_input):
     Raises:
         ParseRangeError: If the input is invalid or cannot be normalized.
     """
+    from rangy import Rangy
     if isinstance(range_input, Rangy):
         range_input = range_input.copy().values
 
@@ -86,18 +88,24 @@ def parse_range(range_input):
     start, end = _normalize_to_sequence(range_input)
 
     try:
-        if not isinstance(start, str):
+        if start == '*':
+            parsed_start = 0
+        elif start == '+':
+            parsed_start = 1
+        elif not isinstance(start, str):
             converter = ConverterRegistry.get(start)
-            parsed_start = converter(start) # or converter.to_number(start) depending on your Converter interface.
+            parsed_start = converter(start)
         else:
             parsed_start = _convert_string_part(start)
 
-        if not isinstance(end, str):
+        if end == '*' or end == '+':
+            parsed_end = INFINITY
+        elif not isinstance(end, str):
             converter = ConverterRegistry.get(end)
-            parsed_end = converter(end) # or converter.to_number(end)
+            parsed_end = converter(end)
         else:
             parsed_end = _convert_string_part(end)
         return parsed_start, parsed_end
 
-    except (KeyError, ValueError, TypeError) as e:  # Handle converter and TypeRegistry errors.
+    except (KeyError, ValueError, TypeError) as e:
         raise ParseRangeError(f"Error parsing range: {e}") from e
