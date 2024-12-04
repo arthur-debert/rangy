@@ -5,11 +5,19 @@
 #  * You're using setuptools_scm to manage your version number, under git tags.
 #  * build dir is dist
 
+print_error() {
+  echo -e "\033[31m$1\033[0m"
+}
+
+print_success() {
+  echo -e "\033[32m$1\033[0m"
+}
+
 get_version() {
   # get the package name
   package_name=$(python setup.py --name 2>/dev/null)
   if [[ -z "$package_name" ]]; then
-    echo "Could not determine package name from setuptools_scm."
+    print_error "Could not determine package name from setuptools_scm."
     exit 1
   fi
   echo "Package name: $package_name"
@@ -17,7 +25,7 @@ get_version() {
   # get version from setuptools_scm, __version__ and check if they match
   version=$(python setup.py --version 2>/dev/null)
   if [[ -z "$version" ]] || [[ "$version" == "0.0.0" ]]; then
-    echo "Could not determine version from setuptools_scm."
+    print_error "Could not determine version from setuptools_scm."
     exit 1
   fi
   # get the version from the package itself in $package_name/__version__.py
@@ -25,7 +33,7 @@ get_version() {
     echo "Version from file: $version_from_file"
   if [[ "$version" != "$version_from_file" ]]; then
 
-    echo "Version from setuptools_scm and __version__ do not match."
+    print_error "Version from setuptools_scm and __version__ do not match."
     exit 1
   fi
   # we've got the version, now let's confirm with the user.
@@ -42,7 +50,7 @@ get_version() {
 
 check_if_published() {
   if twine check dist/* | grep -q "$version"; then
-    echo "Version $version is already published."
+    print_error "Version $version is already published."
     exit 1
   fi
 }
@@ -52,14 +60,29 @@ create_and_push_git_tag() {
     echo "Tag v$version already exists."
   else
     git tag "v$version"
+    print_success "Tag v$version created."
   fi
-  git push origin "v$version"
+  git push origin "v$version" && print_success "Tag v$version pushed to origin."
+}
+
+open_url_in_browser() {
+  url=$1
+  if which xdg-open > /dev/null; then
+    xdg-open "$url"
+  elif which open > /dev/null; then
+    open "$url"
+  else
+    print_error "Could not detect the web browser to open the URL."
+  fi
 }
 
 build_and_publish() {
   rm -rf dist
-  python setup.py sdist bdist_wheel
-  twine upload dist/*
+  python setup.py sdist bdist_wheel && print_success "Package built successfully."
+  output=$(twine upload dist/*)
+  print_success "Package published successfully."
+  url=$(echo "$output" | grep -o 'https://pypi.org/project/[^ ]*' | sed 's/[^ ]*$/&/')
+  echo "Package URL: $url"
 }
 
 # no arguments, do everything.
@@ -69,6 +92,7 @@ if [ "$1" = "" ]; then
   check_if_published
   create_and_push_git_tag
   build_and_publish
+  open_url_in_browser "$url"
 elif [ "$1" = "getversion" ]; then
   get_version
 elif [ "$1" = "published" ]; then
@@ -77,6 +101,9 @@ elif [ "$1" = "gittag" ]; then
   create_and_push_git_tag
 elif [ "$1" = "publish" ]; then
   build_and_publish
+  if [ "$url" != "" ]; then
+    open_url_in_browser "$url"
+  fi
 else
   echo "Usage: $0 [getversion|published|gittag|publish]"
   exit 1
