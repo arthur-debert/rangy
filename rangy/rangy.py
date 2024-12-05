@@ -1,7 +1,7 @@
 import re
 from typing import Tuple, Union
 
-from rangy import (ANY, ANY_CHAR, AT_LEAST_ONE, EXACT, INFINITY, ONE_PLUS_CHAR,
+from rangy import (ANY, ANY_CHAR, AT_LEAST_ONE, EXACT, INFINITY, AT_LEAST_ONE_CHAR,
                    RANGE, SPECIAL_CHARS)
 from rangy.exceptions import ParseRangeError
 
@@ -47,7 +47,7 @@ def _parse(self, rangy) -> Tuple[Union[int, float], Union[int, float]]:
     elif isinstance(rangy, str) and any(sep in rangy for sep in "-,:;"):
         raise ParseRangeError(f"Invalid rangy specification: {rangy}")
     elif isinstance(rangy, (int, str)):
-        if rangy in SPECIAL_CHARS:
+        if rangy in SPECIAL_CHARS.keys():
             min_val = rangy
             max_val = rangy
         else:
@@ -58,14 +58,15 @@ def _parse(self, rangy) -> Tuple[Union[int, float], Union[int, float]]:
     elif rangy == ANY_CHAR:
         min_val = 0
         max_val = INFINITY
-    elif rangy == ONE_PLUS_CHAR:
+    elif rangy == AT_LEAST_ONE_CHAR:
         min_val = 1
         max_val = INFINITY
     else:
         raise ParseRangeError(f"Invalid rangy specification: {rangy}")
 
-    min_val = int(min_val) if min_val not in (SPECIAL_CHARS) else min_val
-    max_val = int(max_val) if max_val not in (SPECIAL_CHARS) else max_val
+    chars = SPECIAL_CHARS.keys()
+    min_val = int(min_val) if min_val not in chars else min_val
+    max_val = int(max_val) if max_val not in chars  else max_val
 
     if min_val == '*':
         min_val = 0
@@ -324,8 +325,21 @@ class Rangy:
         """
         return self._type
 
+    def values_to_repr(self):
+        range_type = self._type
+        min_repr = self._min
+        max_repr = self._max
+        if range_type in SPECIAL_CHARS.keys():
+            raw_val = SPECIAL_CHARS[range_type]
+            if self._max == INFINITY:
+                max_repr = raw_val
+            else:
+                min_repr = raw_val
+        return min_repr, max_repr
+
     def __repr__(self):
-        if self._min == self._max:
-            return f"Rangy({self._min})"
+        _min, _max = self.values_to_repr()
+        if _min == _max:
+            return f"Rangy({_min})"
         else:
-            return f"Rangy({self._min}, {self._max})"
+            return f"Rangy({_min}, {max})"

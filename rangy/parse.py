@@ -76,7 +76,7 @@ def _normalize_to_sequence(range_input):
 
 
 def _convert_string_part(part):
-    if part in SPECIAL_CHARS:
+    if part in SPECIAL_CHARS.keys():
         return part
     for converter in ConverterRegistry():
         try:
