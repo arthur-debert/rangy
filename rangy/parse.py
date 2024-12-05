@@ -75,8 +75,8 @@ def _normalize_to_sequence(range_input):
         raise ParseRangeError(f"Unsupported range input type: {type(range_input)}")
 
 
-def _convert_string_part(part):
-    if part in SPECIAL_CHARS.keys():
+def _convert_part(part):
+    if part in SPECIAL_CHARS.values():
         return part
     for converter in ConverterRegistry():
         try:
@@ -101,24 +101,8 @@ def parse_range(range_input):
 
     start, end = _normalize_to_sequence(range_input)
 
-
     try:
-        if start == '*':
-            parsed_start = 0
-        elif start == '+':
-            parsed_start = 1
-        elif not isinstance(start, str):
-            converter = ConverterRegistry.get(start)
-            parsed_start = converter(start)
-        else:
-            parsed_start = _convert_string_part(start)
-
-        if not isinstance(end, str):
-            converter = ConverterRegistry.get(end)
-            parsed_end = converter(end)
-        else:
-            parsed_end = _convert_string_part(end)
-        return parsed_start, parsed_end
+        return _convert_part(start), _convert_part(end)
 
     except (KeyError, ValueError, TypeError) as e:
         raise ParseRangeError(f"Error parsing range: {e}") from e
