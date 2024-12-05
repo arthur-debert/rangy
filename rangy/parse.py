@@ -101,6 +101,7 @@ def parse_range(range_input):
 
     start, end = _normalize_to_sequence(range_input)
 
+
     try:
         if start == '*':
             parsed_start = 0
@@ -112,9 +113,7 @@ def parse_range(range_input):
         else:
             parsed_start = _convert_string_part(start)
 
-        if end == '*' or end == '+':
-            parsed_end = INFINITY
-        elif not isinstance(end, str):
+        if not isinstance(end, str):
             converter = ConverterRegistry.get(end)
             parsed_end = converter(end)
         else:

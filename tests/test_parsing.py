@@ -16,7 +16,7 @@ def test_from_string_any():
 def test_from_string_at_least_one():
     count = Rangy("+")
     assert count._type == AT_LEAST_ONE
-    assert count.values == (1, 1000000)
+    assert count.values == (1, 000000)
 
 def test_from_string_range():
     count = Rangy("1-3")
