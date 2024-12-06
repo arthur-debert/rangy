@@ -49,26 +49,29 @@ class ConverterRegistry:
     ```
     """
 
-    types = {}
+    types = []
 
     @classmethod
     def register(cls, converter: Converter):
         """Registers a Converter."""
-        cls.types[converter._type] = converter
+        cls.types.append(converter)
 
     @classmethod
     def get(cls, _type):
         """Retrieves a Converter by type."""
         if not isinstance(_type, type):
             _type = _type.__class__
-        return cls.types[_type]
+        for converter in cls.types:
+            if converter._type == _type:
+                return converter
+        raise KeyError(f"No converter registered for type {_type}")
 
     @classmethod
     def clear(cls):
         """Clears all registered converters."""
-        cls.types = {}
+        cls.types.clear()
 
     @classmethod
     def __iter__(cls):
         """Returns an iterator over the registered converters."""
-        return iter(cls.types.values())
+        return iter(cls.types)
