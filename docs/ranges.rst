@@ -133,6 +133,7 @@ Examples
 .. code-block:: python
 
     from rangy import Rangy
+    from datetime import date
 
     # Closed range
     rangy1 = Rangy("2-4")  # or Rangy((2, 4)), Rangy("2,4"), Rangy("2:4"), or Rangy("2;4")
@@ -148,5 +149,17 @@ Examples
 
     # Exact count
     rangy5 = Rangy(4) # or Rangy("4") or Rangy((4, 4))
+
+    # Date range
+    start_date = date(2023, 1, 1)
+    end_date = date(2023, 12, 31)
+    rangy6 = Rangy((start_date, end_date))
+    assert rangy6.values == (start_date.toordinal(), end_date.toordinal())
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
+
+   range_types
 
 

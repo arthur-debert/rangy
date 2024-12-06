@@ -40,6 +40,7 @@ Basic Usage
    :caption: Contents:
 
    ranges
+   range_types
    math
    distribute
 
