@@ -144,6 +144,10 @@ def parse_range(range_input):
     Raises:
         ParseRangeError: If the input is invalid or cannot be parsed.
     """
+    from rangy import Rangy
+    # short circuit if it's already a rangy
+    if isinstance(range_input, Rangy):
+        return range_input.values
 
     start, end = _normalize_to_sequence(range_input)
 
