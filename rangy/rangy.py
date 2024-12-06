@@ -92,7 +92,6 @@ class Rangy:
         """
         self.df = RangeBounds(*parse_func(range))
         self.num = self.to_number()
-        self._type = self._determine_type()
 
     def to_number(self):
         mmin, mmax = self.df.min, self.df.max
@@ -101,21 +100,7 @@ class Rangy:
         num = RangeBounds(mmin, mmax)
         return num
 
-    def _determine_type(self) -> int:
-        """
-        Determines the type of rangy.
 
-        Returns:
-            int: The rangy type, one of rangy_EXACT, rangy_RANGE, rangy_ANY, or rangy_AT_LEAST_ONE.
-        """
-        if self.df.min == 0 and self.df.max == float(INFINITY):
-            return ANY
-        elif self.df.min == 1 and self.df.max == float(INFINITY):
-            return AT_LEAST_ONE
-        elif self.df.min == self.df.max:
-            return EXACT
-        else:
-            return RANGE
 
     def __lt__(self, other: int) -> bool:
         """
