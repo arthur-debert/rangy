@@ -7,7 +7,7 @@ from rangy.parse import parse_range
 def test_single_integer():
     assert parse_range(5) == (5, 5)
 def test_open():
-    assert parse_range((5, "*")) == (5,"*")
+    assert parse_range((5, "*")) == (5,None)
 
 def test_tuple_of_integers():
     assert parse_range((3, 7)) == (3, 7)
@@ -46,4 +46,4 @@ def test_range_input():
 
 def test_range_input_open():
     another_range = (10, "*")
-    assert parse_range(another_range) == (10, "*")
+    assert parse_range(another_range) == (10, None)

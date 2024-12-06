@@ -11,12 +11,12 @@ def test_from_string_exact():
 def test_from_string_any():
     count = Rangy("*")
     assert count._type == ANY
-    assert count.values == (0, 1000000)
+    assert count.values == (0, None)
 
 def test_from_string_at_least_one():
     count = Rangy("+")
     assert count._type == AT_LEAST_ONE
-    assert count.values == (1, 000000)
+    assert count.values == (1, None)
 
 def test_from_string_range():
     count = Rangy("1-3")

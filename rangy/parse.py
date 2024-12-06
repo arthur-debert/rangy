@@ -45,7 +45,7 @@ def _nomalize_str(range_str):
         A tuples of parts of the range string.
     """
     range_str = re.sub(r'^[\[\(]|[\]\)]$', '', range_str.strip())  # Remove brackets
-    range_str = re.split(r'[\s,;|-]+', range_str) # split
+    range_str = re.split(r'[\s,;:|-]+', range_str) # split
     return tuple(part.strip() for part in range_str if part.strip()) # Remove empty strings
 
 def _normalize_to_sequence(range_input):
@@ -75,25 +75,71 @@ def _normalize_to_sequence(range_input):
         raise ParseRangeError(f"Unsupported range input type: {type(range_input)}")
 
 
-def _convert_part(part):
+def _normalize_open_char(part, is_min):
     if part in SPECIAL_CHARS.values():
+        if is_min:
+            if part == "*":
+                return 0
+            elif part == "+":
+                return 1
+        else:
+            if part == "*":
+                return None
+            elif part == "+":
+                return None
         return part
+    return False
+
+def _convert_part(part, is_min):
     for converter in ConverterRegistry():
         try:
             return converter(part)
         except (ValueError, TypeError):
             pass  # Try the next converter
-    raise ParseRangeError(f"No suitable converter found for string part: {part}")
+    raise ParseRangeError(f"Unsupported range part: {part}")
+
+def parse_part(part, is_min):
+    normalized = _normalize_open_char(part, is_min)
+    if normalized is not False:
+        return  normalized
+    return _convert_part(part, is_min)
 
 
 def parse_range(range_input):
-    """Parses a range into a tuple of converted (start, end) values.
+    """
+    Parses a range into a tuple of converted (start, end) values.
+    It returns a suitable tuple that is a Range object, that is a tuple of two
+    ints, where the second value can be None.
+
+    It normalizes open range tokens and converts other tokens using the
+    registered converters.
+
+    Open-ended tokens are transformed into:
+        - The min part: 0 for "*", 1 for "+",
+        - The max part: None for "*", "+"
+    Examples:
+
+    - singulars:
+        - "4"  # (4, 4)
+        - 4 # (4, 4)
+        - (4) # (4, 4)
+    - closed ranges:
+        - "2,3" # (2, 3)
+        - "2-3" # (2, 3)
+        - (2, 3) # (2, 3)
+    - open range:
+        - "*" # (0, None)
+        - "+" # (1, None)
+        - "*-10" # (0, 10)
+        - "+-10" # (1, 10)
+        - "10-*" # (10, None)
+
 
     Args:
         range_input: The range input (string, tuple, int, etc.)
 
     Returns:
-        A tuple (start, end) with converted values.
+        A tuple of ints (start, end) with converted values. None represents open-ended ranges.
 
     Raises:
         ParseRangeError: If the input is invalid or cannot be parsed.
@@ -102,7 +148,8 @@ def parse_range(range_input):
     start, end = _normalize_to_sequence(range_input)
 
     try:
-        return _convert_part(start), _convert_part(end)
+        _min, _max = parse_part(start, True), parse_part(end, False)
+        return parse_part(start, is_min=True), parse_part(end, is_min=False)
 
     except (KeyError, ValueError, TypeError) as e:
         raise ParseRangeError(f"Error parsing range: {e}") from e

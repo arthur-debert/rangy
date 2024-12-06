@@ -1,19 +1,20 @@
 import pytest
 
 from rangy import INFINITY
-from rangy.parse_old import _parse
+from rangy.parse  import parse_range
+
 from rangy.exceptions import ParseRangeError
 
 
 @pytest.mark.parametrize("count, expected", [
     (4, (4, 4)),
     ("4", (4, 4)),
-    ("*", (0, INFINITY)),
-    ("+", (1, INFINITY)),
+    ("*", (0, None)),
+    ("+", (1, None)),
     ("1-3", (1, 3)),
     ((1, 3), (1, 3)),
     (("1", "3"), (1, 3)),
-    (("4", "*"), (4, INFINITY)),
+    (("4", "*"), (4, None)),
     ("1,3", (1, 3)),
     ("1:3", (1, 3)),
     ("1;3", (1, 3)),
@@ -31,12 +32,12 @@ from rangy.exceptions import ParseRangeError
     "range_semicolon"
 ])
 def test_parse(count, expected):
-    assert _parse(None, count) == expected
+    parsed = parse_range(count)
+    assert expected == parsed
 
 @pytest.mark.parametrize("count", [
     "invalid",
     (1, 2, 3),
-    (1,),
     (None, 3),
     (3, None),
     "1-3-5",
@@ -46,14 +47,13 @@ def test_parse(count, expected):
 ], ids=[
     "invalid_str",
     "invalid_tuple_three_elements",
-    "invalid_tuple_one_element",
     "invalid_tuple_none_min",
     "invalid_tuple_none_max",
-    "invalid_range_hyphen",
-    "invalid_range_comma",
-    "invalid_range_colon",
-    "invalid_range_semicolon"
+    "invalid_range_hyphen:triplet",
+    "invalid_range_comma:triplet",
+    "invalid_range_colon:triplet",
+    "invalid_range_semicolon:triplet"
 ])
 def test_parse_invalid(count):
     with pytest.raises(ParseRangeError):
-        _parse(None, count)
+        parse_range(count)
