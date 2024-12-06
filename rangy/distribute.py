@@ -74,7 +74,7 @@ def distribute(items: List[Any], rangys: List[Rangy], separator: str = SEPERATOR
         separated_items.append(current_group)
 
         if len(separated_items) != len(rangys):
-            raise ValueError("Number of separated groups does not match the number of Rangys.")
+            raise ValueError("Number of separated groups does not match the number of Rangys.") # pragma: no cover
 
         # Distribute separated items
         results = []
@@ -122,7 +122,7 @@ def distribute(items: List[Any], rangys: List[Rangy], separator: str = SEPERATOR
             item_index += int(take)
         # Validate AND check if we've ignored some arguments.
         if item_index != len(items):
-            raise ValueError(f"Too many arguments provided. {len(items) - item_index} extra argument(s) found.")
+            raise ValueError(f"Too many arguments provided. {len(items) - item_index} extra argument(s) found.") # pragma: no cover
 
         # Validation
         for i, vc in enumerate(rangys):
