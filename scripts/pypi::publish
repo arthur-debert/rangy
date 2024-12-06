@@ -82,6 +82,9 @@ elif [ "$1" = "gittag" ]; then
   create_and_push_git_tag
 elif [ "$1" = "publish" ]; then
   build_and_publish
+  if [ "$url" != "" ]; then
+    open_url_in_browser "$url"
+  fi
 else
   echo "Usage: $0 [getversion|published|gittag|publish]"
   exit 1
