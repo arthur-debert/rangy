@@ -79,7 +79,7 @@ def distribute(items: List[Any], rangys: List[Rangy], separator: str = SEPERATOR
         # Distribute separated items
         results = []
         for group, c in zip(separated_items, rangys):
-            if not c.validate(len(group)):
+            if not len(group) in c:
                 raise ValueError(f"Group size does not satisfyRangy {c}.")
             results.append(group)  # Already separated correctly
         return results
@@ -126,7 +126,7 @@ def distribute(items: List[Any], rangys: List[Rangy], separator: str = SEPERATOR
 
         # Validation
         for i, vc in enumerate(rangys):
-            if not vc.validate(len(result[i])):
+            if not len(result[i]) in vc:
                 raise ValueError(f"Group {i + 1} size does not satisfyRangy {vc}.")
 
         return result

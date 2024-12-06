@@ -220,18 +220,6 @@ class Rangy:
         else:
             raise ParseRangeError("Rangy represents a single value, use .value instead")
 
-    def validate(self, rangy: int) -> bool:
-        """
-        Validates if the given rangy falls within the specified range.
-
-        Args:
-            rangy (int): The rangy to validate.
-
-        Returns:
-            bool: True if the rangy is within the specified range, False otherwise.
-        """
-        return self.num.min <= rangy <= self.num.max if self.num.max != float("inf") else rangy >= self.num.min
-
     @property
     def rangy_type(self):
         """

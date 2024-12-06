@@ -35,3 +35,57 @@ def test_contains(count, item, expected):
 def test_invalid_tuple(count):
     with pytest.raises(ParseRangeError):
         Rangy(count)
+
+def test_validate_exact():
+    count = Rangy(3)
+    assert 3 in count
+    assert 4 not in count
+
+def test_validate_any():
+    count = Rangy("*")
+    assert 0 in count
+    assert 1000 in count
+
+def test_validate_at_least_one():
+    count = Rangy("+")
+    assert 1 in count
+    assert 0 not in count
+
+def test_validate_range():
+    count = Rangy("1-3")
+    assert 1 in count
+    assert 2 in count
+    assert 3 in count
+    assert 0 not in count
+    assert 4 not in count
+
+def test_validate_range_lower_any():
+    count = Rangy("*-3")
+    assert 0 in count
+    assert 1 in count
+    assert 2 in count
+    assert 3 in count
+    assert 4 not in count
+
+def test_validate_range_lower_at_least_one():
+    count = Rangy("+-3")
+    assert 1 in count
+    assert 2 in count
+    assert 3 in count
+    assert 0 not in count
+    assert 4 not in count
+
+def test_validate_range_upper_any():
+    count = Rangy("3-*")
+    assert 3 in count
+    assert 4 in count
+    assert 1000 in count
+    assert 2 not in count
+
+def test_validate_range_upper_at_least_one():
+    count = Rangy("3-+")
+    assert 3 in count
+    assert 4 in count
+    assert 1000 in count
+    assert 2 not in count
+
