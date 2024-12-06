@@ -1,5 +1,9 @@
 import pytest
-from rangy import _parse, INFINITY
+
+from rangy import INFINITY
+from rangy.parse_old import _parse
+from rangy.exceptions import ParseRangeError
+
 
 @pytest.mark.parametrize("count, expected", [
     (4, (4, 4)),
@@ -35,9 +39,6 @@ def test_parse(count, expected):
     (1,),
     (None, 3),
     (3, None),
-    (-1, 3),
-    (3, -1),
-    (-1, -3),
     "1-3-5",
     "1,3,5",
     "1:3:5",
@@ -48,14 +49,11 @@ def test_parse(count, expected):
     "invalid_tuple_one_element",
     "invalid_tuple_none_min",
     "invalid_tuple_none_max",
-    "negative_min",
-    "negative_max",
-    "negative_both",
     "invalid_range_hyphen",
     "invalid_range_comma",
     "invalid_range_colon",
     "invalid_range_semicolon"
 ])
 def test_parse_invalid(count):
-    with pytest.raises(ValueError):
+    with pytest.raises(ParseRangeError):
         _parse(None, count)

@@ -1,6 +1,8 @@
 
 import pytest
-from rangy.rangy import Rangy, EXACT, ANY, AT_LEAST_ONE, RANGE
+
+from rangy.rangy import ANY, AT_LEAST_ONE, EXACT, RANGE, Rangy
+
 
 @pytest.mark.parametrize("rangy, expected_type", [
     (4, EXACT),

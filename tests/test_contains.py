@@ -1,5 +1,8 @@
 import pytest
+
 from rangy import Rangy
+from rangy.exceptions import ParseRangeError
+
 
 @pytest.mark.parametrize("count, item, expected", [
     (4, 4, True),
@@ -30,5 +33,5 @@ def test_contains(count, item, expected):
     "none_max"
 ])
 def test_invalid_tuple(count):
-    with pytest.raises(ValueError):
+    with pytest.raises(ParseRangeError):
         Rangy(count)

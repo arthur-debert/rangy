@@ -1,5 +1,7 @@
 import pytest
+
 from rangy import Rangy, distribute
+
 SEPERATOR = "--"
 
 

@@ -1,78 +1,11 @@
-from dataclasses import dataclass, field
 from typing import Tuple, Union
-import re
 
-from rangy import AT_LEAST_ONE, EXACT,ANY, RANGE, INFINITY, ANY_CHAR, ONE_PLUS_CHAR
+from rangy import (ANY, AT_LEAST_ONE, EXACT, INFINITY, RANGE, SPECIAL_CHARS)
+from rangy.exceptions import ParseRangeError
 
 RangyType = Union[int, str]
 
-
-
-
-def _parse(self, rangy) -> Tuple[Union[int, float], Union[int, float]]:
-    """
-    Parses a rangy specification into a tuple representing the min and max allowed rangys.
-
-    Args:
-        rangy: The rangy specification. Can be one of the following:
-            - int: An exact rangy.
-            - str: A string representation of an exact rangy or a range.  Ranges can be specified as "min-max", "min+", "+", or "*".  Uses '-', ',', ':', and ';' as separators.
-            - tuple: A two-element tuple (min, max) representing the range.  Elements can be int or str.
-
-    Returns:
-        A tuple (min_count, max_count) representing the parsed count range.  `INFINITY` is used for open maximums.
-
-    Raises:
-        ValueError: If the provided `rangy` is in an invalid format, such as an incorrect range string, a tuple with more than two elements, or non-numeric values.
-
-    Examples:
-        - 4  # An integer
-        - "4" # A string representing an integer
-        - "*"  # Any count
-        - "+" # At least one
-        - "1-3" # A range
-        - (1, 3)  # A tuple range
-        - ("1", "3") # A tuple range with strings
-        - ("4", "*") # Open-ended range
-    """
-    range_pattern = re.compile(r"^(\d+|\*|\+)[-,:;](\d+|\*|\+)$")
-
-    if isinstance(rangy, tuple) and len(rangy) == 2:
-        min_val, max_val = rangy
-        if min_val is None or max_val is None:
-            raise ValueError(f"Invalid rangy specification: {rangy}")
-    elif isinstance(rangy, str) and range_pattern.match(rangy):
-        min_val, max_val = range_pattern.match(rangy).groups()
-    elif isinstance(rangy, str) and any(sep in rangy for sep in "-,:;"):
-        raise ValueError(f"Invalid rangy specification: {rangy}")
-    elif isinstance(rangy, (int, str)):
-        min_val = max_val = rangy
-    elif rangy == ANY_CHAR:
-        min_val = 0
-        max_val = INFINITY
-    elif rangy == ONE_PLUS_CHAR:
-        min_val = 1
-        max_val = INFINITY
-    else:
-        raise ValueError(f"Invalid rangy specification: {rangy}")
-
-    min_val = int(min_val) if min_val not in ("*", "+") else min_val
-    max_val = int(max_val) if max_val not in ("*", "+") else max_val
-
-    if min_val == '*':
-        min_val = 0
-    elif min_val == '+':
-        min_val = 1
-
-    if max_val == '*':
-        max_val = INFINITY
-    elif max_val == '+':
-        max_val = INFINITY
-
-    if min_val < 0 or max_val < 0:
-        raise ValueError(f"Rangys are always positive, got {min_val}, {max_val}")
-
-    return min_val, max_val
+from .parse import parse_range as new_parse
 
 
 class Rangy:
@@ -92,7 +25,7 @@ class Rangy:
     * **Construction:** Flexible initialization from integers, strings, or tuples. Various string formats for ranges are supported (e.g., "1-3", "1,3", "1:3", "1;3", "*", "+").
     * **Comparison:** Numerical comparison operators (<, <=, >, >=) against integers, comparing against the maximum allowed rangy of the `Rangy` instance. Equality (==, !=) is supported against both integers and other `Rangy` instances.
     * **Membership testing (`in` operator):** Checks if an integer falls within the defined rangy or range.
-    * **Value access:** Properties `.value` (for exact rangys) and `.values` (for ranges) provide convenient access to rangy information. Raises a ValueError if used inappropriately (e.g., accessing .value when it is representing a range of rangys).
+    * **Value access:** Properties `.value` (for exact rangys) and `.values` (for ranges) provide convenient access to rangy information. Raises a ParseRangeError if used inappropriately (e.g., accessing .value when it is representing a range of rangys).
     * **Validation:** The `.validate()` method checks if a given integer satisfies the rangy specification.
     * **Rangy Type Determination:** The `._determine_rangy_type()` method allows classification into the four rangy types: rangy_EXACT, rangy_RANGE, rangy_ANY, and rangy_AT_LEAST_ONE.
 
@@ -142,7 +75,7 @@ class Rangy:
         _max (int): The maximum range value.
         _rangy_type (int): The type of range.
     """
-    def __init__(self, range: Union[int, str, Tuple[int, int]]):
+    def __init__(self, range: Union[int, str, Tuple[int, int]], parse_func: callable = new_parse):
         """
         Initializes a Rangy instance.
 
@@ -150,14 +83,14 @@ class Rangy:
             rangy (Union[int, str, Tuple[int, int]]): The rangy specification. Can be an integer, string, or tuple representing the rangy.
 
         Raises:
-            ValueError: If the provided `rangy` is in an invalid format.
+            ParseRangeError: If the provided `rangy` is in an invalid format.
         """
         if isinstance(range, Rangy):
             self._min = range._min
             self._max = range._max
             self._type = range._type
         else:
-            self._min, self._max = _parse(self, range)
+            self._min, self._max = parse_func(range)
             self._type = self._determine_type()
 
     def _determine_type(self) -> int:
@@ -167,9 +100,9 @@ class Rangy:
         Returns:
             int: The rangy type, one of rangy_EXACT, rangy_RANGE, rangy_ANY, or rangy_AT_LEAST_ONE.
         """
-        if self._min == 0 and self._max == INFINITY:
+        if self._min == 0 and self._max == float(INFINITY):
             return ANY
-        elif self._min == 1 and self._max == INFINITY:
+        elif self._min == 1 and self._max == float(INFINITY):
             return AT_LEAST_ONE
         elif self._min == self._max:
             return EXACT
@@ -271,12 +204,12 @@ class Rangy:
             int: The exact rangy value.
 
         Raises:
-            ValueError: If the rangy represents a range.
+            ParseRangeError: If the rangy represents a range.
         """
         if self._min == self._max:
             return self._min
         else:
-            raise ValueError("Rangy represents a range, use .values instead")
+            raise ParseRangeError("Rangy represents a range, use .values instead")
 
     @property
     def values(self) -> Tuple[int, int]:
@@ -287,12 +220,12 @@ class Rangy:
             Tuple[int, int]: The rangy range.
 
         Raises:
-            ValueError: If the rangy represents a single value.
+            ParseRangeError: If the rangy represents a single value.
         """
         if self._min != self._max:
             return (self._min, self._max)
         else:
-            raise ValueError("Rangy represents a single value, use .value instead")
+            raise ParseRangeError("Rangy represents a single value, use .value instead")
 
     def validate(self, rangy: int) -> bool:
         """
@@ -316,8 +249,21 @@ class Rangy:
         """
         return self._type
 
+    def values_to_repr(self):
+        range_type = self._type
+        min_repr = self._min
+        max_repr = self._max
+        if range_type in SPECIAL_CHARS.keys():
+            raw_val = SPECIAL_CHARS[range_type]
+            if self._max == INFINITY:
+                max_repr = raw_val
+            else:
+                min_repr = raw_val
+        return min_repr, max_repr
+
     def __repr__(self):
-        if self._min == self._max:
-            return f"Rangy({self._min})"
+        _min, _max = self.values_to_repr()
+        if _min == _max:
+            return f"Rangy({_min})"
         else:
-            return f"Rangy({self._min}, {self._max})"
+            return f"Rangy({_min}, {max})"
