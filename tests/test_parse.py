@@ -1,6 +1,7 @@
 import pytest
 
-from rangy import INFINITY, _parse
+from rangy import INFINITY
+from rangy.parse_old import _parse
 from rangy.exceptions import ParseRangeError
 
 
