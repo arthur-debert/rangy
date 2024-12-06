@@ -92,21 +92,21 @@ def distribute(items: List[Any], rangys: List[Rangy], separator: str = SEPERATOR
         remaining_items = n_items
 
         for i, vc in enumerate(rangys):
-            take = vc._min  # Ensure minimum is taken
-            if vc._max != INFINITY:  # Bounded Rangys
-                take = min(vc._max, remaining_items)
+            take = vc.num.min  # Ensure minimum is taken
+            if vc.num.max != INFINITY:  # Bounded Rangys
+                take = min(vc.num.max, remaining_items)
             takes[i] = take
             remaining_items -= take
 
-            if remaining_items < sum(vcc._min for vcc in rangys[i+1:]):  # Check if there will be enough items to at least meet minimal subsequent rangys
+            if remaining_items < sum(vcc.num.min for vcc in rangys[i+1:]):  # Check if there will be enough items to at least meet minimal subsequent rangys
                 raise ValueError("Not enough items to distribute")
 
         # Distribute remaining items to unbounded counts
-        infinite_indices = [i for i, vc in enumerate(rangys) if vc._max == INFINITY]
+        infinite_indices = [i for i, vc in enumerate(rangys) if vc.num.max == INFINITY]
         if infinite_indices:  # Only distribute if there are any infinite counts
-            infinite_count_min_sum = sum(rangys[i]._min for i in infinite_indices)
+            infinite_count_min_sum = sum(rangys[i].num.min for i in infinite_indices)
             for i in infinite_indices:
-                takes[i] += int(remaining_items * (rangys[i]._min / infinite_count_min_sum) if infinite_count_min_sum > 0 else (1 if i == infinite_indices[0] else 0))  # distribute proportionally, handle division by zero, put all in the first infinite range if all min counts for unbounded counts are 0
+                takes[i] += int(remaining_items * (rangys[i].num.min / infinite_count_min_sum) if infinite_count_min_sum > 0 else (1 if i == infinite_indices[0] else 0))  # distribute proportionally, handle division by zero, put all in the first infinite range if all min counts for unbounded counts are 0
 
             distributed_items = sum(takes)
             if distributed_items != n_items:  # Allocate any remaining to the first infinite range. Should only happen when min counts for unbounded counts are 0
