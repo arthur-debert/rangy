@@ -19,7 +19,7 @@ def _split(as_squence):
     Returns:
         A tuple of two values.
     """
-    if None in as_squence:
+    if None ==  as_squence:
         raise ParseRangeError("Invalid range tuple/list")
     if len(as_squence) == 1:
         # this is valid, as it

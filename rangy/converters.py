@@ -1,3 +1,5 @@
+from datetime import date
+
 class Converter():
     """
     Facilitates conversion of custom data types to numeric and string representations for use within the `Rangy` system.
@@ -69,6 +71,7 @@ class Converter():
         self.to_string = to_string
 
     def to_number(self, value):
+
         if self.to_numeric:
             return self.to_numeric(value)
         try:
