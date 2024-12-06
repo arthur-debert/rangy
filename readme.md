@@ -2,6 +2,8 @@
 
 Rangy is a small but feisty python lib designed to make working with numerical ranges a breeze. It handles both open and closed ranges, provides algorithms for distributing items across ranges, and allows you to treat ranges like numbers in comparisons (e.g., `if x < myrange`).
 
+Full docs at [Rangy Documentation](https://rangy.readthedocs.io/en/latest/index.html).
+
 ## Features
 
 * **Expressive Range Definitions:** Define counts as exact values (`4`), ranges (`"2-4"`, `"2-*"`, `"+"`), or unbounded (`"*"`).
