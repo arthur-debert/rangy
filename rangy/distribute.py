@@ -1,6 +1,7 @@
+import math
 from typing import Any, List
 
-from . import INFINITY, Rangy
+from . import Rangy
 
 SEPERATOR = "--"
 
@@ -93,7 +94,7 @@ def distribute(items: List[Any], rangys: List[Rangy], separator: str = SEPERATOR
 
         for i, vc in enumerate(rangys):
             take = vc.num.min  # Ensure minimum is taken
-            if vc.num.max != INFINITY:  # Bounded Rangys
+            if vc.num.max != math.inf:  # Bounded Rangys
                 take = min(vc.num.max, remaining_items)
             takes[i] = take
             remaining_items -= take
@@ -102,7 +103,7 @@ def distribute(items: List[Any], rangys: List[Rangy], separator: str = SEPERATOR
                 raise ValueError("Not enough items to distribute")
 
         # Distribute remaining items to unbounded counts
-        infinite_indices = [i for i, vc in enumerate(rangys) if vc.num.max == INFINITY]
+        infinite_indices = [i for i, vc in enumerate(rangys) if vc.num.max == math.inf]
         if infinite_indices:  # Only distribute if there are any infinite counts
             infinite_count_min_sum = sum(rangys[i].num.min for i in infinite_indices)
             for i in infinite_indices:

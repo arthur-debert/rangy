@@ -246,6 +246,7 @@ class Rangy:
         def _(value):
             if value == None:
                 return ANY_CHAR
+            return value
         return _(self.df.min), _(self.df.max)
 
     def __repr__(self):
