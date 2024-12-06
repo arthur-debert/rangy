@@ -19,7 +19,7 @@ def test_value(count, expected_value):
     ("1-3", (1, 3)),
     ((1, 3), (1, 3)),
     (("1", "3"), (1, 3)),
-    (("4", "*"), (4, 1000000)),
+    (("4", "*"), (4, None))
 ], ids=[
     "range_str",
     "range_tuple_int",

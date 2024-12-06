@@ -1,12 +1,17 @@
-from typing import Tuple, Union
+from dataclasses import dataclass
+import math
+from typing import Optional, Tuple, Union
 
-from rangy import (ANY, AT_LEAST_ONE, EXACT, INFINITY, RANGE, SPECIAL_CHARS)
+from rangy import (ANY, ANY_CHAR, AT_LEAST_ONE, EXACT, INFINITY, RANGE, SPECIAL_CHARS)
 from rangy.exceptions import ParseRangeError
-
-RangyType = Union[int, str]
 
 from .parse import parse_range as new_parse
 
+
+@dataclass
+class RangeBounds:
+    min: int
+    max: Optional[int]
 
 class Rangy:
     """
@@ -71,8 +76,8 @@ class Rangy:
     ```
 
     Attributes:
-        _min (int): The minimum range value.
-        _max (int): The maximum range value.
+        df (RangeBounds): The defnitinition for the range. Note that is neither the human readble nor the internal representation for numbers.
+        num (RangeBounds): The definition as numerical (for example ANY == math.inf)
         _rangy_type (int): The type of range.
     """
     def __init__(self, range: Union[int, str, Tuple[int, int]], parse_func: callable = new_parse):
@@ -85,13 +90,16 @@ class Rangy:
         Raises:
             ParseRangeError: If the provided `rangy` is in an invalid format.
         """
-        if isinstance(range, Rangy):
-            self._min = range._min
-            self._max = range._max
-            self._type = range._type
-        else:
-            self._min, self._max = parse_func(range)
-            self._type = self._determine_type()
+        self.df = RangeBounds(*parse_func(range))
+        self.num = self.to_number()
+        self._type = self._determine_type()
+
+    def to_number(self):
+        mmin, mmax = self.df.min, self.df.max
+        if mmax == None:
+            mmax =  math.inf
+        num = RangeBounds(mmin, mmax)
+        return num
 
     def _determine_type(self) -> int:
         """
@@ -100,11 +108,11 @@ class Rangy:
         Returns:
             int: The rangy type, one of rangy_EXACT, rangy_RANGE, rangy_ANY, or rangy_AT_LEAST_ONE.
         """
-        if self._min == 0 and self._max == float(INFINITY):
+        if self.df.min == 0 and self.df.max == float(INFINITY):
             return ANY
-        elif self._min == 1 and self._max == float(INFINITY):
+        elif self.df.min == 1 and self.df.max == float(INFINITY):
             return AT_LEAST_ONE
-        elif self._min == self._max:
+        elif self.df.min == self.df.max:
             return EXACT
         else:
             return RANGE
@@ -119,7 +127,7 @@ class Rangy:
         Returns:
             bool: True if the maximum rangy is less than the given value, False otherwise.
         """
-        return self._max < other
+        return self.num.max < other
 
     def __le__(self, other: int) -> bool:
         """
@@ -131,7 +139,7 @@ class Rangy:
         Returns:
             bool: True if the maximum rangy is less than or equal to the given value, False otherwise.
         """
-        return self._max <= other
+        return self.num.max <= other
 
     def __gt__(self, other: int) -> bool:
         """
@@ -143,7 +151,7 @@ class Rangy:
         Returns:
             bool: True if the minimum rangy is greater than the given value, False otherwise.
         """
-        return self._min > other
+        return self.num.min > other
 
     def __ge__(self, other: int) -> bool:
         """
@@ -155,7 +163,7 @@ class Rangy:
         Returns:
             bool: True if the minimum rangy is greater than or equal to the given value, False otherwise.
         """
-        return self._min >= other
+        return self.num.min >= other
 
     def __eq__(self, other: Union[int, 'Rangy']) -> bool:
         """
@@ -168,8 +176,8 @@ class Rangy:
             bool: True if the rangy is equal to the given value or Rangy instance, False otherwise.
         """
         if isinstance(other, Rangy):
-            return self._min == other._min and self._max == other._max
-        return self._min == other and self._max == other
+            return self.num.min == other.num.min and self.num.max == other.num.max
+        return self.num.min == other and self.num.max == other
 
     def __ne__(self, other: Union[int, 'Rangy']) -> bool:
         """
@@ -193,7 +201,7 @@ class Rangy:
         Returns:
             bool: True if the item is within the rangy range, False otherwise.
         """
-        return self._min <= item <= self._max
+        return self.num.min <= item <= self.num.max
 
     @property
     def value(self) -> int:
@@ -206,8 +214,8 @@ class Rangy:
         Raises:
             ParseRangeError: If the rangy represents a range.
         """
-        if self._min == self._max:
-            return self._min
+        if self.df.min == self.df.max:
+            return self.df.min
         else:
             raise ParseRangeError("Rangy represents a range, use .values instead")
 
@@ -222,8 +230,8 @@ class Rangy:
         Raises:
             ParseRangeError: If the rangy represents a single value.
         """
-        if self._min != self._max:
-            return (self._min, self._max)
+        if self.df.min != self.df.max:
+            return (self.df.min, self.df.max)
         else:
             raise ParseRangeError("Rangy represents a single value, use .value instead")
 
@@ -237,7 +245,7 @@ class Rangy:
         Returns:
             bool: True if the rangy is within the specified range, False otherwise.
         """
-        return self._min <= rangy <= self._max if self._max != float("inf") else rangy >= self._min
+        return self.num.min <= rangy <= self.num.max if self.num.max != float("inf") else rangy >= self.num.min
 
     @property
     def rangy_type(self):
@@ -250,16 +258,10 @@ class Rangy:
         return self._type
 
     def values_to_repr(self):
-        range_type = self._type
-        min_repr = self._min
-        max_repr = self._max
-        if range_type in SPECIAL_CHARS.keys():
-            raw_val = SPECIAL_CHARS[range_type]
-            if self._max == INFINITY:
-                max_repr = raw_val
-            else:
-                min_repr = raw_val
-        return min_repr, max_repr
+        def _(value):
+            if value == None:
+                return ANY_CHAR
+        return _(self.df.min), _(self.df.max)
 
     def __repr__(self):
         _min, _max = self.values_to_repr()
