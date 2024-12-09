@@ -6,9 +6,8 @@ fi
 source .venv/bin/activate &&\
     echo "Installing dependencies" &&\
      pip install --upgrade pip &&\
-     pip install . &&\
-     pip install .[dev] &&\
-     pip install .[docs] &&\
+     pip install poetry &&\
+     poetry install --with dev --with docs &&\
      echo "Running tests" &&\
      echo "We're ready to go" &&\
      pytest .
