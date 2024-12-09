@@ -1,0 +1,79 @@
+#! /usr/bin/env python3
+"""
+This script reads values, including nested values, from a TOML file.
+
+Usage:
+    tomcat <toml_file> <dot_separated_key>
+
+If no file is specified, it defaults to pyproject.toml.
+
+Example:
+    tomcat project.name
+    tomcat somefile.toml a.b.c
+"""
+
+import sys
+import toml
+
+def italics(text):
+    return f"\033[3m{text}\033[0m"
+
+def bold(text):
+    return f"\033[1m{text}\033[0m"
+
+USAGE = f"""
+{bold('tomcat')}
+Read values, including nested values, from a TOML file.
+
+If no file is specified, it defaults to pyproject.toml.
+
+{bold('USAGE:')}
+toml <toml_file> <dot_separated_key>
+
+{bold('EXAMPLE:')}
+toml project.name
+toml somefile.toml a.b.c
+"""
+
+def todot(adict, lookup_path):
+    """
+    Accesses a nested dictionary value using a dot-separated string.
+
+    Args:
+        adict: The dictionary to access.
+        lookup_path: The dot-separated string representing the nested keys.
+
+    Returns:
+        The value at the specified nested key, or None if the key doesn't exist.
+    """
+    found_keys = []
+    for key in lookup_path.split('.'):
+        adict = adict.get(key)
+        if adict is None:
+            raise KeyError(f"'{bold(key)}' not found in {italics('.'.join(found_keys))}")
+        found_keys.append(key)
+    return adict
+
+def process(args):
+    """
+    Processes the command-line arguments and prints the value from the TOML file.
+
+    Args:
+        args: The list of command-line arguments.
+    """
+    lookup = args.pop()
+    filename = args.pop() if args else 'pyproject.toml'
+    if not lookup:
+        print(USAGE)
+        sys.exit(1)
+    # load the toml file, defaults to pyproject.toml
+    t = toml.load(filename)
+    # get the value at the specified key
+    try:
+        print(todot(t, lookup))
+    except KeyError as e:
+        print(e.args[0].strip('"'))
+        sys.exit(1)
+
+if __name__ == '__main__':
+    process(sys.argv[1:])
