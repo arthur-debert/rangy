@@ -1,1 +1,2 @@
-__version__ = "1.0.0"
+import importlib;
+__version__ = importlib.metadata.version('arse')

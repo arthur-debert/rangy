@@ -3,8 +3,8 @@ requires = ["setuptools>=42", "wheel", "setuptools_scm"]
 build-backend = "setuptools.build_meta"
 
 [project]
-dynamic = ["version"]
 name = "rangy"
+version = "1.0.0"
 description = "rangy helps you with the efficience of shell scripts in Python."
 readme = { file = "README.md", content-type = "text/markdown" }
 requires-python = ">=3.9"
@@ -24,6 +24,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
+    "toml==0.10.2",
     "build==1.2.2.post1",
     "asttokens==2.4.1",
     "certifi==2024.6.2",

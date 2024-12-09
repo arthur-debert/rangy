@@ -24,11 +24,24 @@ print_success() {
 
 get_version() {
   package_name=$1
-  version=$(python -c "import importlib.util; spec = importlib.util.spec_from_file_location('$package_name.__version__', '$package_name/__version__.py'); module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module); print(module.__version__)")
+  if [ -z "$package_name" ]; then
+    package_name=$(get_package_name)
+  fi
+  version=$(./scripts/tomlcat project.version)
+  if [ $? -ne 0 ]; then
+    print_error "Failed to get version from pyproject.toml"
+    exit 1
+  fi
+  echo "$version"
 }
 
 get_package_name() {
-  echo "$(python -c 'import toml; print(toml.load("pyproject.toml")["project"]["name"])')"
+  package_name=$(./scripts/tomlcat project.name)
+  if [ $? -ne 0 ]; then
+    print_error "Failed to get package name from pyproject.toml"
+    exit 1
+  fi
+  echo "$package_name"
 }
 
 check_if_published() {
@@ -82,8 +95,10 @@ elif [ "$1" = "gittag" ]; then
   create_and_push_git_tag
 elif [ "$1" = "publish" ]; then
   build_and_publish
+elif [ "$1" = "packagename" ]; then
+  get_package_name
 else
-  echo "Usage: $0 [getversion|published|gittag|publish]"
+  echo "Usage: $0 [getversion|published|gittag|packagename|publish]"
   exit 1
 fi
 
