@@ -1,0 +1,10 @@
+#! /usr/bin/env bash
+
+# calls the setup::venv and setup::requirements scripts
+
+script_dir=$(dirname "$0")
+"$script_dir/setup::venv" || exit 1
+"$script_dir/setup::deps"
+
+source .venv/bin/activate || { echo "Virtual environment activation failed!"; exit 1; }
+"$@"  # Execute any command passed as arguments

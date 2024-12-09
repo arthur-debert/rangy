@@ -19,7 +19,6 @@ classifiers = [
 urls = { "Homepage" = "https://github.com/arthur-debert/rangy" }
 
 dependencies = [
-    "dateutils==0.6.12",
     "toml>=0.10.2",
 ]
 

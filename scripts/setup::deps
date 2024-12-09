@@ -1,6 +1,6 @@
 if [ ! -d .venv ]; then
-    echo "Creating virtual environment .venv"
-    python3 -m venv .venv
+    echo "Venv should be created, see setup::venv.sh"
+    exit 1
 
 fi
 source .venv/bin/activate &&\
