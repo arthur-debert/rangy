@@ -4,7 +4,6 @@
 #   pypi::publish
 # If debugging, you can run the steps individually:
 #   pypi::publish getversion
-#   pypi::publish published
 #   pypi::publish gittag
 #   pypi::publish publish
 
@@ -22,37 +21,8 @@ print_success() {
   echo -e "\033[32m$1\033[0m"
 }
 
-get_version() {
-  package_name=$1
-  if [ -z "$package_name" ]; then
-    package_name=$(get_package_name)
-  fi
-  version=$(./scripts/tomlcat project.version)
-  if [ $? -ne 0 ]; then
-    print_error "Failed to get version from pyproject.toml"
-    exit 1
-  fi
-  echo "$version"
-}
-
-get_package_name() {
-  package_name=$(./scripts/tomlcat project.name)
-  if [ $? -ne 0 ]; then
-    print_error "Failed to get package name from pyproject.toml"
-    exit 1
-  fi
-  echo "$package_name"
-}
-
-check_if_published() {
-  response=$(curl -s "https://pypi.org/pypi/$package_name/json")
-  if echo "$response" | grep -q "\"$version\""; then
-    print_error "Version $version is already published on PyPi."
-    exit 1
-  fi
-}
-
 create_and_push_git_tag() {
+  version=$(./scripts/tomlcat project.version)
   if git rev-parse "v$version" >/dev/null 2>&1; then
     echo "Tag v$version already exists."
   else
@@ -62,43 +32,20 @@ create_and_push_git_tag() {
   git push origin "v$version" && print_success "Tag v$version pushed to origin."
 }
 
-
-build_and_publish() {
-  rm -fr dist;  python -m build &&  print_success "Package built" && twine upload dist/* && print_success "Package published"
+publish_with_poetry() {
+  poetry publish --build
 }
 
-confirm(){
-  echo "Building: $package_name: $version"
-  echo
-  read -p "Do you want to continue? [y/N] " -n 1 -r
-  if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-    echo
-    echo "Aborted."
-    exit 1
-  fi
-  echo
-}
-# no arguments, do everything.
-# if you want to do only one step, pass the argument , helpful for debugging.
+
 if [ "$1" = "" ]; then
-  package_name=$(get_package_name)
-  get_version "$package_name"
-  confirm
-  check_if_published
   create_and_push_git_tag
-  build_and_publish
-elif [ "$1" = "getversion" ]; then
-  get_version
-elif [ "$1" = "published" ]; then
-  check_if_published
+  publish_with_poetry
 elif [ "$1" = "gittag" ]; then
   create_and_push_git_tag
 elif [ "$1" = "publish" ]; then
-  build_and_publish
-elif [ "$1" = "packagename" ]; then
-  get_package_name
+  publish_with_poetry
 else
-  echo "Usage: $0 [getversion|published|gittag|packagename|publish]"
+  echo "Usage: $0 [getversion|gittag|publish]"
   exit 1
 fi
 
