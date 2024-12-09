@@ -4,7 +4,7 @@
 
 script_dir=$(dirname "$0")
 "$script_dir/setup::venv" || exit 1
-"$script_dir/setup::deps"
+"$script_dir/setup::deps" || exit 1
 
 source .venv/bin/activate || { echo "Virtual environment activation failed!"; exit 1; }
 "$@"  # Execute any command passed as arguments
