@@ -24,7 +24,7 @@ jobs:
                   echo "$HOME/.local/bin" >> $GITHUB_PATH
 
             - name: Install dependencies
-              run: ./scripts/setup::deps
+              run: ./scripts/setup::deps --novenv
 
             - name: Run tests
               run: poetry run pytest

@@ -1,13 +1,29 @@
-if [ ! -d .venv ]; then
-    echo "Venv should be created, see setup::venv.sh"
-    exit 1
+# Parse arguments
+NOVENV=false
+for arg in "$@"; do
+  case $arg in
+    --novenv)
+      NOVENV=true
+      shift
+      ;;
+  esac
+done
 
+# Check for .venv and activate it unless --novenv is passed
+if [ "$NOVENV" = false ]; then
+  if [ -d ".venv" ]; then
+    echo "Activating virtual environment..."
+    source .venv/bin/activate
+  else
+    echo ".venv directory not found. Please create a virtual environment first."
+    exit 1
+  fi
 fi
-source .venv/bin/activate &&\
-    echo "Installing dependencies" &&\
-     pip install --upgrade pip &&\
-     pip install poetry &&\
-     poetry install --with dev --with docs &&\
-     echo "Running tests" &&\
-     echo "We're ready to go" &&\
-     pytest .
+
+echo "Installing dependencies" &&\
+ pip install --upgrade pip &&\
+ pip install poetry &&\
+ poetry install --with dev --with docs &&\
+ echo "Running tests" &&\
+ echo "We're ready to go" &&\
+ pytest .
