@@ -50,7 +50,7 @@ def todot(adict, lookup_path):
     for key in lookup_path.split('.'):
         adict = adict.get(key)
         if adict is None:
-            raise KeyError(f"'{bold(key)}' not found in {italics('.'.join(found_keys))}")
+            raise KeyError(f"key '{bold(key)}' not found in {italics('.'.join(found_keys))}")
         found_keys.append(key)
     return adict
 
@@ -72,7 +72,7 @@ def process(args):
     try:
         print(todot(t, lookup))
     except KeyError as e:
-        print(e.args[0].strip('"'))
+        print(f"{filename}: " +   e.args[0].strip('"'))
         sys.exit(1)
 
 if __name__ == '__main__':
