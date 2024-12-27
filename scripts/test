@@ -1,3 +1,0 @@
-#! /usr/bin/env bash
-
-pytest --cov=rangy --cov-report term-missing

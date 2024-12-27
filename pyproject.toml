@@ -1,10 +1,10 @@
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["setuptools>=42", "wheel", "setuptools_scm"]
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "rangy"
-dynamic = ["version", "description"]
+dynamic = ["version",  "description"]
 readme = { file = "README.md", content-type = "text/markdown" }
 requires-python = ">=3.9"
 license = { text = "MIT" }
@@ -18,20 +18,8 @@ classifiers = [
 ]
 urls = { "Homepage" = "https://github.com/arthur-debert/rangy" }
 
-dependencies = [
-    "toml>=0.10.2",
-]
-
-[tool.poetry]
-name = "rangy"
-version = "1.0.0"
-description = "rangy helps you with the efficience of shell scripts in Python."  # Redundant but can stay
-authors = ["Arthur Debert <arthur@debert.xyz>"] # Simpler format in [tool.poetry]
-
-
 [tool.poetry.dependencies]
 python = ">=3.9"
-toml = ">=0.10.2"
 
 [tool.poetry.group.dev.dependencies]
 build = "1.2.2.post1"
@@ -64,7 +52,6 @@ wcwidth = "0.2.13"
 pytest-xdist = "3.6.1"
 twine = "6.0.1"
 
-
 [tool.poetry.group.docs.dependencies]
 sphinx-rtd-theme = "3.0.2"
 sphinxcontrib-applehelp = "2.0.0"
@@ -78,10 +65,28 @@ rstcheck = "6.2.4"
 rstcheck-core = "1.2.1"
 doc8 = "1.1.2"
 
-
 [tool.pytest.ini_options]
 addopts = "-ra -q"
-testpaths = ["tests"]
+testpaths = ["./tests/"]
+python_files = ["test_*.py"]
+norecursedirs = ["template/py"]
+
+[tool.poetry]
+name = "rangy"
+version = "0.0.1"
+description = "Work with integer ranges with ease"
+authors = ["Arthur Debert <arthur@debert.xyz"]
+readme = "README.md"
+include = [
+    "templates",
+    "template/**",
+    "LICENSE",
+    "README.md"
+]
+exclude = [
+    "tests"
+]
+
 
 [tool.twine]
 repository = "https://upload.pypi.org/legacy/"
