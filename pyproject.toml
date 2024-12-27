@@ -75,7 +75,8 @@ norecursedirs = ["template/py"]
 name = "rangy"
 version = "0.0.1"
 description = "Work with integer ranges with ease"
-authors = ["Arthur Debert <arthur@debert.xyz"]
+authors = ["Arthur Debert <arthur@debert.xyz>"]
+
 readme = "README.md"
 include = [
     "templates",
